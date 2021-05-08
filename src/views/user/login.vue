@@ -4,7 +4,7 @@
     <div class="text_welcome">Welcome</div>
     <div class="input_box">
       <div>
-        <van-field v-model="userName" type="text" placeholder="账号" />
+        <van-field v-model="userPhone" type="text" placeholder="账号" />
       </div>
       <div>
         <van-field v-model="passWord" type="password" placeholder="密码" />
@@ -26,22 +26,22 @@ import { setAccessToken, setRefreshToken } from '@/utils/auth'
 export default {
   setup(props, { refs, root }) {
     const count = ref(0);
-    const userName = ref('');
+    const userPhone = ref('');
     const passWord = ref('');
 
     const btnLogin = () => {
-      login(userName.value, passWord.value).then(res => {
+      login(userPhone.value, passWord.value).then(res => {
         if (res.code == 200) {
           setAccessToken(res.data.accessToken);
           setRefreshToken(res.data.refreshToken);
-          root.$router.replace('/')
+          root.$router.replace('/main/index')
         }
       })
     }
 
     return {
       count,
-      userName,
+      userPhone,
       passWord,
       btnLogin,
     }

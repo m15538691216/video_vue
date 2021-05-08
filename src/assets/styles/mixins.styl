@@ -1,3 +1,5 @@
+@import "./themes.styl";//引入配置
+
 clear_float(){
   &::before,&::after{
     content: '';
@@ -11,3 +13,35 @@ text_center(){
   align-items: center;
   justify-content: center;
 }
+
+
+//获取背景色
+bg_color($color)
+  //默认样式（任意选择一个主题即可注意要和下面的默认主题一致）
+  background-color: bright[$color];
+  
+  for item in themeList
+    //判断html的data-theme的属性值，{}是Stylus插值
+    [data-theme = {item.name}] & {
+      //这里的item可以当作一个对象，item[$color]可表示为：对象名.属性
+      background-color: item[$color];
+    }
+
+//获取字体颜色
+font_color($color)
+  color: bright[$color];
+
+  for item in themeList
+    [data-theme = {item.name}] & {
+      color: item[$color];
+    }
+
+//获取边框颜色
+border_color($color)
+  border-color: bright[$color];
+
+  for item in themeList
+    [data-theme = {item.name}] & {
+      border-color: item[$color];
+    }
+

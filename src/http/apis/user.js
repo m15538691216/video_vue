@@ -1,10 +1,10 @@
 import request from '../interceptor'
 
 // 登录方法
-export function login(username, password) {
+export function login(userPhone, passWord) {
   const data = {
-    username,
-    password,
+    userPhone,
+    passWord,
   }
   return request({
     url: '/api/login',
@@ -29,5 +29,14 @@ export function getrefreshToken(data) {
     url: '/api/getrefreshToken',
     method: 'post',
     data: data
+  })
+}
+
+//获取七牛云token
+export function qiniuToken(query) {
+  return request({
+    url: '/api/qiniu/token',
+    method: 'get',
+    params: query
   })
 }

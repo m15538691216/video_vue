@@ -2,73 +2,104 @@
 <template>
   <div>
     <div class="movie_body">
-      <div class="body_rebo">
-        <div class="rebo_nav">
-          <div class="left_text">正在热播</div>
-          <div class="right_text">12月开播</div>
-        </div>
-        <div class="rebo_tab">
-          <van-row gutter="8">
-            <van-col span="8" v-for="(h,index) in 3" :key="index">
-              <div class="item_box">
-                <div class="item_box_img">
-                  <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/138060001c7a7c7749958" />
+      <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
+        <div class="body_rebo">
+          <div class="rebo_nav">
+            <div class="left_text">正在热播</div>
+            <div class="right_text">{{new Date().getMonth() + 1}}月开播</div>
+          </div>
+          <div class="rebo_tab">
+            <van-row gutter="8">
+              <van-col span="8" v-for="(h,index) in list.list" :key="index">
+                <div class="item_box" @click="bindDetails(h.id)">
+                  <div class="item_box_img">
+                    <app-Image width="100%" height="100%" lazy-load :src="h.coverImg" />
+                  </div>
+                  <div class="item_box_cname">{{h.pname}}</div>
                 </div>
-                <div class="item_box_cname">野山百里香</div>
-              </div>
-              <div class="reying_text">
-                <div>12月热映中</div>
-              </div>
-            </van-col>
-          </van-row>
-        </div>
-      </div>
-      <!-- 大陆剧 -->
-      <div v-for="(j,index1) in list" :key="index1">
-        <div class="body_nav_box">
-          <i class="line"></i>
-          <div class="text">{{j.title}}</div>
-          <div class="more">更多
-            <van-icon name="arrow" />
+                <div class="reying_text">
+                  <div>{{new Date().getMonth() + 1}}月热映中</div>
+                </div>
+              </van-col>
+            </van-row>
           </div>
         </div>
-        <div class="body_tab_list">
-          <van-row gutter="8">
-            <van-col span="8" v-for="(h,index) in 6" :key="index">
-              <div class="item_box">
-                <div class="item_box_img">
-                  <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/ff14000178b0d50d6347" />
-                  <div class="score">10.0</div>
-                  <div class="title">高清</div>
+        <!-- 大陆剧 -->
+        <div v-for="(j,index1) in list.array" :key="index1">
+          <div class="body_nav_box">
+            <i class="line"></i>
+            <div class="text">{{j.title}}</div>
+            <div class="more" @click="bindScreen(j.title)">更多
+              <van-icon name="arrow" />
+            </div>
+          </div>
+          <div class="body_tab_list">
+            <van-row gutter="8">
+              <van-col span="8" v-for="(h,index) in j.list" :key="index">
+                <div class="item_box" @click="bindDetails(h.id)">
+                  <div class="item_box_img">
+                    <app-Image width="100%" height="100%" lazy-load :src="h.coverImg" />
+                    <div class="score">10.0</div>
+                    <div class="title">{{h.clarity}}</div>
+                  </div>
+                  <div class="item_box_cname">{{h.pname}}</div>
                 </div>
-                <div class="item_box_cname">我是一个小虎牙</div>
-              </div>
-            </van-col>
-          </van-row>
+              </van-col>
+            </van-row>
+          </div>
         </div>
-      </div>
+      </van-pull-refresh>
     </div>
   </div>
 </template>
 
 <script>
 import { ref, reactive } from '@vue/composition-api';
+import { teleplayGetList } from '@/http';
 
 export default {
-  setup() {
-    const list = reactive(
-      [
-        { title: '大陆剧' },
-        { title: '港剧' },
-        { title: '台剧' },
-        { title: '韩剧' },
-        { title: '日剧' },
-        { title: '美剧' },
-        { title: '海外剧' },
-      ]
-    );
+  setup(props, { refs, root }) {
 
-    return { list }
+
+    function bindDetails(id) {
+      root.$router.push(`/teleplay/details/${id}`)
+    }
+
+    function bindScreen(text){
+      root.$router.push(`/screen?text=电视剧`)
+    }
+
+
+    //获取电视剧列表
+
+    const list = reactive(ref([]));
+
+    function getList() {
+      teleplayGetList().then(res => {
+        list.value = res.data;
+        isLoading.value = false;
+      })
+    }
+
+    /** 下拉刷新 */
+    const isLoading = ref(false);
+
+    function onRefresh() {
+      setTimeout(() => {
+        getList();
+      }, 500);
+    }
+
+    /** 执行函数 */
+    getList();
+
+    return {
+      list,
+      bindDetails,
+      onRefresh,
+      isLoading,
+      bindScreen
+    }
   }
 }
 </script>
@@ -238,5 +269,10 @@ export default {
       width: 100%;
     }
   }
+}
+
+.custom-image .van-empty__image {
+  width: 90px;
+  height: 90px;
 }
 </style>

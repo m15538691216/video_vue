@@ -9,7 +9,7 @@ import {
     Col,
     Row,
     Image as VanImage,
-    Swipe, 
+    Swipe,
     SwipeItem,
     Lazyload,
     Icon,
@@ -19,7 +19,13 @@ import {
     List,
     PullRefresh,
     Toast,
-    NavBar
+    NavBar,
+    Switch,
+    Cell, 
+    CellGroup,
+    Popup,
+    Uploader,
+    Empty,
 } from 'vant';
 
 
@@ -44,3 +50,12 @@ Vue.use(List);
 Vue.use(PullRefresh);
 Vue.use(Toast);
 Vue.use(NavBar);
+Vue.use(Switch);
+Vue.use(Cell);
+Vue.use(CellGroup);
+Vue.use(Popup);
+Vue.use(Uploader);
+Vue.use(Empty);
+
+
+Toast.setDefaultOptions({ duration: 1500 });

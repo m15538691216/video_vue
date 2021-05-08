@@ -1,11 +1,11 @@
-<!--  -->
+<!-- 页面顶部 -->
 <template>
   <div class="movie_top">
-    <div class="movie_top_left">
+    <div class="movie_top_left" @click="bindSearch">
       <van-icon name="search" color="#1F87CB" size="18px" />
       <div class="search_text">搜索内容...</div>
     </div>
-    <div class="movie_top_right" @click="$router.push('/screen/1')">
+    <div class="movie_top_right" @click="bindScreen">
       <div>院线</div>
       <div>免费</div>
       <div>全部分类</div>
@@ -13,10 +13,29 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
+import { ref, toRefs, watch } from '@vue/composition-api';
 
+export default {
+  setup(props, { refs, root }) {
+    let title = '';
+
+
+    title = root.$route.meta.title;
+    watch(() => root.$route, (to,from) => {
+      title = to.meta.title;
+    })
+
+    function bindSearch() {
+      root.$router.push(`/search/${title}`)
+    }
+
+    function bindScreen(){
+      root.$router.push(`/screen/${title}`)
+    }
+
+    return {
+      bindSearch,
+      bindScreen
     }
   },
 }
@@ -28,7 +47,7 @@ export default {
   background: #F7F8FA;
   justify-content: space-between;
   padding: 0 16px;
-  height: 28px;
+  height: 30px;
 
   .movie_top_left {
     display: flex;

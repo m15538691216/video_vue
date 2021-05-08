@@ -1,19 +1,35 @@
 <template>
   <div id="app">
-    <router-view />
+    <router-view v-if="isRouterAlive" />
+    
   </div>
 </template>
 
 
-<style lang="stylus">
-// body, html {
-//   margin: 0;
-//   padding: 0;
-//   height: 100vh;
-//   width: 100%;
-// }
+<script>
+import { ref, reactive, provide } from '@vue/composition-api';
 
-// #app {
-//   height: 100%;
-// }
+export default {
+  setup(props, { refs, root }) {
+    let isRouterAlive = ref(true);
+
+    const reload = () => {
+      isRouterAlive.value = false;
+      return new Promise((resolve, reject) => {
+        root.$nextTick(() => {
+          isRouterAlive.value = true;
+          resolve(true);
+        })
+      })
+    }
+    provide('reload', reload)
+
+    return { isRouterAlive }
+  }
+}
+</script>
+
+<style lang="stylus" >
+@import '~~@/assets/styles/app.styl';
+
 </style>

@@ -22,14 +22,14 @@
 export default {
   data() {
     return {
-
     }
   },
 }
 </script>
 <style lang="stylus" scoped>
 .routerView {
-  padding-bottom: 50px;
+  overflow-y: scroll;
+  height: calc(100vh - 50px);
 }
 
 .iconfont {

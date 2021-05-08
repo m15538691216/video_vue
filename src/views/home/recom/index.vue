@@ -30,104 +30,30 @@
     </div>
     <div class="body">
       <!-- 电影 -->
-      <div class="modo_title">
-        <i class="iconfont icondianying"></i>
-        <div class="text">电影热映</div>
-        <div class="more">更多
-          <van-icon name="arrow" />
+      <div v-for="(h,index) in list" :key="index">
+        <div class="modo_title">
+          <i class="iconfont icondianying" v-if="index == 0"></i>
+          <i class="iconfont icondianshi" v-else-if="index == 1"></i>
+          <i class="iconfont icondongman" v-else-if="index == 2"></i>
+          <i class="iconfont iconzongyi" v-else-if="index == 3"></i>
+          <i class="iconfont iconpaishe" v-else></i>
+          <div class="text">{{h.title}}</div>
+          <div class="more">更多
+            <van-icon name="arrow" />
+          </div>
         </div>
-      </div>
-      <div class="modo_body">
-        <van-row gutter="8">
-          <van-col span="8" v-for="(h,index) in 6" :key="index">
-            <div class="item_box">
-              <div class="item_box_img">
-                <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/137de00020366f17da220" />
+        <div class="modo_body">
+          <van-row gutter="8">
+            <van-col span="8" v-for="(j,index2) in h.list" :key="index2">
+              <div class="item_box">
+                <div class="item_box_img">
+                  <app-Image width="100%" height="100%" lazy-load :src="j.coverImg" />
+                </div>
+                <div class="item_box_cname">{{j.pname}}</div>
               </div>
-              <div class="item_box_cname">我是一个小虎牙</div>
-            </div>
-          </van-col>
-        </van-row>
-      </div>
-      <!-- 电视剧 -->
-      <div class="modo_title">
-        <i class="iconfont icondianshi"></i>
-        <div class="text">热播电视</div>
-        <div class="more">更多
-          <van-icon name="arrow" />
+            </van-col>
+          </van-row>
         </div>
-      </div>
-      <div class="modo_body">
-        <van-row gutter="8">
-          <van-col span="8" v-for="(h,index) in 6" :key="index">
-            <div class="item_box">
-              <div class="item_box_img">
-                <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/137de00020366f17da220" />
-              </div>
-              <div class="item_box_cname">我是一个小虎牙</div>
-            </div>
-          </van-col>
-        </van-row>
-      </div>
-      <!-- 动漫 -->
-      <div class="modo_title">
-        <i class="iconfont icondongman"></i>
-        <div class="text">动漫</div>
-        <div class="more">更多
-          <van-icon name="arrow" />
-        </div>
-      </div>
-      <div class="modo_body">
-        <van-row gutter="8">
-          <van-col span="8" v-for="(h,index) in 6" :key="index">
-            <div class="item_box">
-              <div class="item_box_img">
-                <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/137de00020366f17da220" />
-              </div>
-              <div class="item_box_cname">我是一个小虎牙</div>
-            </div>
-          </van-col>
-        </van-row>
-      </div>
-      <!-- 综艺 -->
-      <div class="modo_title">
-        <i class="iconfont iconzongyi"></i>
-        <div class="text">综艺</div>
-        <div class="more">更多
-          <van-icon name="arrow" />
-        </div>
-      </div>
-      <div class="modo_body">
-        <van-row gutter="8">
-          <van-col span="8" v-for="(h,index) in 6" :key="index">
-            <div class="item_box">
-              <div class="item_box_img">
-                <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/137de00020366f17da220" />
-              </div>
-              <div class="item_box_cname">我是一个小虎牙</div>
-            </div>
-          </van-col>
-        </van-row>
-      </div>
-      <!-- 微电影 -->
-      <div class="modo_title">
-        <i class="iconfont iconpaishe"></i>
-        <div class="text">微电影</div>
-        <div class="more">更多
-          <van-icon name="arrow" />
-        </div>
-      </div>
-      <div class="modo_body">
-        <van-row gutter="8">
-          <van-col span="8" v-for="(h,index) in 6" :key="index">
-            <div class="item_box">
-              <div class="item_box_img">
-                <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/137de00020366f17da220" />
-              </div>
-              <div class="item_box_cname">我是一个小虎牙</div>
-            </div>
-          </van-col>
-        </van-row>
       </div>
     </div>
   </div>
@@ -135,6 +61,7 @@
 </template>
 <script>
 import { ref, reactive } from '@vue/composition-api';
+import { getRecomList } from '@/http';
 
 export default {
   setup() {
@@ -147,11 +74,23 @@ export default {
       ]
     )
 
-    return { images }
+    /** 获取数据 */
+    const list = reactive(ref([]));
+    function getList() {
+      getRecomList().then(res => {
+        list.value = res.data;
+      })
+    }
+    getList()
+
+    return { images, list }
   }
 }
 </script>
 <style lang="stylus" scoped>
+.main {
+}
+
 .list_icon {
   height: 100px;
   background: #fff;
@@ -248,6 +187,8 @@ export default {
 
   .item_box_cname {
     line-height: 30px;
+    overflow: hidden;
+    height: 30px;
     font-size: 12px;
     position: absolute;
     bottom: 0;

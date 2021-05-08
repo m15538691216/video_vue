@@ -8,19 +8,22 @@
             <i class="iconfont" :class="h.icon"></i>
             {{h.text}}
           </div>
+          <div class="right_box" @click="$router.push(`/screen?text=动漫`)">
+            筛选
+          </div>
         </div>
         <div class="mode_body">
           <van-row gutter="8">
-            <van-col span="8" v-for="(h,index) in count" :key="index">
-              <div class="item_box">
+            <van-col span="8" v-for="(h,index) in list" :key="index">
+              <div class="item_box" @click="$router.push(`/anime/details/${h.id}`)">
                 <div class="item_box_img">
-                  <app-Image width="100%" height="100%" lazy-load src="https://p.pstatp.com/origin/fed4000110241e6b3748" />
+                  <app-Image width="100%" height="100%" lazy-load :src="h.coverImg" />
                   <div class="top_img"></div>
-                  <div class="title">连载至22集</div>
-                  <div class="score">10.0</div>
+                  <div class="title">{{h.clarity}}</div>
+                  <!-- <div class="score">10.0</div> -->
                 </div>
-                <div class="item_box_cname">我是一个小虎牙</div>
-                <div class="item_box_address">地区:日本</div>
+                <div class="item_box_cname">{{h.pname}}</div>
+                <div class="item_box_address">地区:{{h.city}}</div>
               </div>
             </van-col>
           </van-row>
@@ -31,6 +34,7 @@
 </template>
 <script>
 import { ref, reactive } from '@vue/composition-api';
+import { animeGetList } from '@/http'
 
 export default {
   setup(props, { refs, root }) {
@@ -55,6 +59,21 @@ export default {
 
     /** 获取数据模块 */
     const count = ref(21);
+    const list = reactive(ref([]));
+    const total = ref(0);
+
+    function getList() {
+      animeGetList({ sort: 'updateTime', count: count.value }).then(res => {
+        if (res.code == 200) {
+          list.value = res.data.list;
+          total.value = res.data.total;
+          refreshing.value = false;
+          loading.value = false;
+        }
+      })
+    }
+
+    getList();
 
     /** 下拉刷新 */
     const refreshing = ref(false);
@@ -63,8 +82,7 @@ export default {
       setTimeout(() => {
         root.$toast('刷新成功');
         count.value = 21;
-        refreshing.value = false;
-        finished.value = false;
+        getList();
       }, 1000);
     }
 
@@ -73,19 +91,18 @@ export default {
     const finished = ref(false);
 
     function onLoad() {
-
       setTimeout(() => {
         count.value += 3;
-        console.log(count.value)
-        loading.value = false;
-        if (count.value >= 60) {
+        getList();
+        if (count.value >= total.value) {
           finished.value = true;
         }
-      }, 1000);
+      }, 1500);
     }
 
 
     return {
+      list,
       items,
       bandItem,
       count,
@@ -106,7 +123,7 @@ export default {
 
 .mode_title {
   background: #fff;
-  display: flex;
+  clear_float();
 
   .item {
     width: 70px;
@@ -116,6 +133,7 @@ export default {
     line-height: 30px;
     color: #fff;
     font-size: 14px;
+    float: left;
 
     &--active {
       background: #1F87CB;
@@ -124,6 +142,17 @@ export default {
         color: #fff;
       }
     }
+  }
+
+  .right_box {
+    float: right;
+    height: 30px;
+    line-height: 30px;
+    width: 70px;
+    text-align: center;
+    background: #94c8d7;
+    color: #fff;
+    font-size: 14px;
   }
 
   .iconfont {
@@ -175,6 +204,8 @@ export default {
 
     .item_box_cname {
       line-height: 24px;
+      height: 24px;
+      overflow: hidden;
       font-size: 14px;
       width: 100%;
     }
